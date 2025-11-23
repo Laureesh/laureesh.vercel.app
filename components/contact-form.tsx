@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserClient } from "@/lib/supabase/client"
 
 export function ContactForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,9 +26,15 @@ export function ContactForm() {
       message: formData.get("message") as string,
     }
 
+    console.log("[v0] Submitting contact form:", data)
+
     try {
-      const supabase = createClient()
+      const supabase = createBrowserClient()
+      console.log("[v0] Supabase client created")
+
       const { error } = await supabase.from("contact_messages").insert([data])
+
+      console.log("[v0] Insert result - error:", error)
 
       if (error) throw error
 
@@ -40,6 +46,7 @@ export function ContactForm() {
       // Reset form
       e.currentTarget.reset()
     } catch (error) {
+      console.error("[v0] Contact form error:", error)
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
